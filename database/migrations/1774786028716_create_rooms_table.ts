@@ -6,10 +6,25 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('host_id').unsigned().references('users.id').notNullable().onDelete('CASCADE')
-      table.string('code').notNullable()
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.string('code', 20).notNullable().unique()
+ 
+      table.string('name', 255).notNullable()
+      table.text('description').nullable()
+ 
+      table.integer('host_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
+ 
+      table.enum('status', ['waiting', 'active', 'closed']).defaultTo('waiting')
+ 
+      table.boolean('is_private').defaultTo(false)
+      table.string('password', 255).nullable()
+      table.integer('max_participants').defaultTo(50)
+ 
+      table.string('mediasoup_router_id').nullable()
+ 
+      table.timestamp('started_at').nullable()
+      table.timestamp('closed_at').nullable()
+      table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').notNullable()
     })
   }
 

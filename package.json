@@ -62,12 +62,16 @@
     "@adonisjs/lucid": "^22.0.0",
     "@adonisjs/session": "^8.0.0",
     "@adonisjs/shield": "^9.0.0",
+    "@adonisjs/transmit": "^3.0.1",
     "@japa/api-client": "^3.2.1",
     "@tuyau/core": "^1.0.0",
     "@vinejs/vine": "^4.3.0",
     "better-sqlite3": "^12.6.2",
     "luxon": "^3.7.2",
-    "reflect-metadata": "^0.2.2"
+    "mediasoup": "^3.19.19",
+    "pg": "^8.20.0",
+    "reflect-metadata": "^0.2.2",
+    "uuid": "^13.0.0"
   },
   "hotHook": {
     "boundaries": [

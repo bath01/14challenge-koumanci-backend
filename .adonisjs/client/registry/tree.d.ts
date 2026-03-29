@@ -17,9 +17,25 @@ export interface ApiDefinition {
     }
   }
   rooms: {
-    rooms: {
-      create: typeof routes['rooms.rooms.create']
-      join: typeof routes['rooms.rooms.join']
-    }
+    index: typeof routes['rooms.index']
+    store: typeof routes['rooms.store']
+    show: typeof routes['rooms.show']
+    destroy: typeof routes['rooms.destroy']
+    join: typeof routes['rooms.join']
+    leave: typeof routes['rooms.leave']
+  }
+  participants: {
+    index: typeof routes['participants.index']
+    store: typeof routes['participants.store']
+    destroy: typeof routes['participants.destroy']
+  }
+  rtcs: {
+    capabilities: typeof routes['rtcs.capabilities']
+    createTransport: typeof routes['rtcs.create_transport']
+    connectTransport: typeof routes['rtcs.connect_transport']
+    producers: typeof routes['rtcs.producers']
+    produce: typeof routes['rtcs.produce']
+    consume: typeof routes['rtcs.consume']
+    resumeConsumer: typeof routes['rtcs.resume_consumer']
   }
 }

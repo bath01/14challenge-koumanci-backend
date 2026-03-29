@@ -1,45 +1,119 @@
-import Room from '#models/room'
 import type { HttpContext } from '@adonisjs/core/http'
-import config from '@adonisjs/core/services/config'
+import vine from '@vinejs/vine'
+import RoomService from '#services/room_service'
+
+const roomService = new RoomService()
+
+// ─── Validators ───────────────────────────────────────────────────────────────
+
+const createRoomValidator = vine.compile(
+  vine.object({
+    name: vine.string().trim().minLength(2).maxLength(100),
+    description: vine.string().trim().optional(),
+    isPrivate: vine.boolean().optional(),
+    password: vine.string().minLength(4).optional(),
+    maxParticipants: vine.number().min(2).max(200).optional(),
+  })
+)
+
+const joinRoomValidator = vine.compile(
+  vine.object({
+    password: vine.string().optional(),
+  })
+)
+
+// ─── Controller ──────────────────────────────────────────────────────────────
 
 export default class RoomsController {
-    async create({ auth, response }: HttpContext) {
+  /**
+   * GET /rooms
+   * Lister les rooms de l'utilisateur (en tant que participant ou hôte)
+   */
+  async index({ auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
 
-        const hostId = auth.user!.id;
+    const { default: Participant } = await import('#models/participant')
 
-        const generatedCode = await this.generateAlphanumeric()
-        const room = await Room.create({ hostId, code: generatedCode })
+    const participations = await Participant.query()
+      .where('user_id', user.id)
+      .whereIn('status', ['invited', 'joined'])
+      .preload('room', (q) => {
+        q.preload('host', (hq) => hq.select(['id', 'fullName', 'email']))
+      })
 
-        return response.created({ room })
-    }
+    const rooms = participations.map((p) => ({
+      ...p.room.serialize(),
+      myRole: p.role,
+      myStatus: p.status,
+    }))
 
-    async join({ auth, request, response }: HttpContext) {
-        const { code } = request.body()
-        const room = await Room.query().where('code', code).first()
+    return response.ok({ data: rooms })
+  }
 
-        if (!room) {
-            return response.notFound({ message: 'Room not found' })
-        }
+  /**
+   * POST /rooms
+   * Créer une nouvelle room
+   */
+  async store({ auth, request, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const data = await request.validateUsing(createRoomValidator)
 
-        auth.user!.currentRoomId = room.id
-        await auth.user!.save()
+    const room = await roomService.createRoom(user, data)
+    await room.load('host', (q) => q.select(['id', 'fullName', 'email']))
 
-        return response.ok({ room })
-    }
+    return response.created({
+      message: 'Room créée avec succès.',
+      data: room.serialize(),
+    })
+  }
 
+  /**
+   * GET /rooms/:code
+   * Détail d'une room par son code
+   */
+  async show({ params, response }: HttpContext) {
+    const room = await roomService.getRoomByCode(params.code)
 
-    private async generateAlphanumeric(): Promise<string> {
-        const length = config.get('app.roomCodeLength', 6) as number;
+    return response.ok({ data: room.serialize() })
+  }
 
-        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            result += charset[randomIndex];
-        }
-        if ((await Room.query().where('code', result).first())) {
-            return this.generateAlphanumeric();
-        }
-        return result;
-    };
+  /**
+   * POST /rooms/:code/join
+   * Rejoindre une room
+   */
+  async join({ auth, params, request, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const { password } = await request.validateUsing(joinRoomValidator)
+
+    const participant = await roomService.joinRoom(user, params.code, password)
+
+    return response.ok({
+      message: 'Vous avez rejoint la room.',
+      data: participant.serialize(),
+    })
+  }
+
+  /**
+   * POST /rooms/:code/leave
+   * Quitter une room
+   */
+  async leave({ auth, params, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+
+    await roomService.leaveRoom(user, params.code)
+
+    return response.ok({ message: 'Vous avez quitté la room.' })
+  }
+
+  /**
+   * DELETE /rooms/:code
+   * Fermer définitivement une room (hôte uniquement)
+   */
+  async destroy({ auth, params, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+
+    await roomService.closeRoom(user, params.code)
+
+    return response.ok({ message: 'Room fermée avec succès.' })
+  }
 }

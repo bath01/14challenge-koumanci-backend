@@ -32,45 +32,85 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
-export class PostSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'summary', 'title', 'updatedAt', 'url'] as const
-  $columns = PostSchema.$columns
+export class ParticipantSchema extends BaseModel {
+  static $columns = ['audioEnabled', 'canPublishAudio', 'canPublishVideo', 'canShareScreen', 'createdAt', 'id', 'invitedBy', 'joinedAt', 'leftAt', 'producers', 'role', 'roomId', 'screenSharing', 'status', 'transportId', 'updatedAt', 'userId', 'videoEnabled'] as const
+  $columns = ParticipantSchema.$columns
+  @column()
+  declare audioEnabled: boolean | null
+  @column()
+  declare canPublishAudio: boolean | null
+  @column()
+  declare canPublishVideo: boolean | null
+  @column()
+  declare canShareScreen: boolean | null
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime | null
+  declare createdAt: DateTime
   @column({ isPrimary: true })
   declare id: number
   @column()
-  declare summary: string
+  declare invitedBy: number | null
+  @column.dateTime()
+  declare joinedAt: DateTime | null
+  @column.dateTime()
+  declare leftAt: DateTime | null
   @column()
-  declare title: string
+  declare producers: any | null
+  @column()
+  declare role: string | null
+  @column()
+  declare roomId: number | null
+  @column()
+  declare screenSharing: boolean | null
+  @column()
+  declare status: string | null
+  @column()
+  declare transportId: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime
   @column()
-  declare url: string
+  declare userId: number | null
+  @column()
+  declare videoEnabled: boolean | null
 }
 
 export class RoomSchema extends BaseModel {
-  static $columns = ['code', 'createdAt', 'hostId', 'id', 'updatedAt'] as const
+  static $columns = ['closedAt', 'code', 'createdAt', 'description', 'hostId', 'id', 'isPrivate', 'maxParticipants', 'mediasoupRouterId', 'name', 'password', 'startedAt', 'status', 'updatedAt'] as const
   $columns = RoomSchema.$columns
+  @column.dateTime()
+  declare closedAt: DateTime | null
   @column()
   declare code: string
   @column.dateTime({ autoCreate: true })
-  declare createdAt: DateTime | null
+  declare createdAt: DateTime
   @column()
-  declare hostId: number
+  declare description: string | null
+  @column()
+  declare hostId: number | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare isPrivate: boolean | null
+  @column()
+  declare maxParticipants: number | null
+  @column()
+  declare mediasoupRouterId: string | null
+  @column()
+  declare name: string
+  @column({ serializeAs: null })
+  declare password: string | null
+  @column.dateTime()
+  declare startedAt: DateTime | null
+  @column()
+  declare status: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
+  declare updatedAt: DateTime
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'currentRoomId', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
-  @column()
-  declare currentRoomId: number | null
   @column()
   declare email: string
   @column()

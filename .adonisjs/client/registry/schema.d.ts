@@ -9,7 +9,7 @@ export type ParamValue = string | number | bigint | boolean
 export interface Registry {
   'auth.new_account.store': {
     methods: ["POST"]
-    pattern: '/api/v1/auth/signup'
+    pattern: '/api/v1/auth/register'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/user').signupValidator)>>
       paramsTuple: []
@@ -55,28 +55,196 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/profile_controller').default['show']>>>
     }
   }
-  'rooms.rooms.create': {
-    methods: ["POST"]
-    pattern: '/api/v1/rooms/create'
+  'rooms.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/rooms'
     types: {
       body: {}
       paramsTuple: []
       params: {}
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['create']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['create']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['index']>>>
     }
   }
-  'rooms.rooms.join': {
+  'rooms.store': {
     methods: ["POST"]
-    pattern: '/api/v1/rooms/join'
+    pattern: '/api/v1/rooms'
     types: {
       body: {}
       paramsTuple: []
       params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['store']>>>
+    }
+  }
+  'rooms.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/rooms/:code'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['show']>>>
+    }
+  }
+  'rooms.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/rooms/:code'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['destroy']>>>
+    }
+  }
+  'rooms.join': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/join'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['join']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['join']>>>
+    }
+  }
+  'rooms.leave': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/leave'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['leave']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rooms_controller').default['leave']>>>
+    }
+  }
+  'participants.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/rooms/:code/participants'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/participants_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/participants_controller').default['index']>>>
+    }
+  }
+  'participants.store': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/participants'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/participants_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/participants_controller').default['store']>>>
+    }
+  }
+  'participants.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/v1/rooms/:code/participants/:userId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { code: ParamValue; userId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/participants_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/participants_controller').default['destroy']>>>
+    }
+  }
+  'rtcs.capabilities': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/rooms/:code/rtc/capabilities'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['capabilities']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['capabilities']>>>
+    }
+  }
+  'rtcs.create_transport': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/rtc/transport'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['createTransport']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['createTransport']>>>
+    }
+  }
+  'rtcs.connect_transport': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/rtc/transport/connect'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['connectTransport']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['connectTransport']>>>
+    }
+  }
+  'rtcs.producers': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/rooms/:code/rtc/producers'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['producers']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['producers']>>>
+    }
+  }
+  'rtcs.produce': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/rtc/produce'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['produce']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['produce']>>>
+    }
+  }
+  'rtcs.consume': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/rtc/consume'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['consume']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['consume']>>>
+    }
+  }
+  'rtcs.resume_consumer': {
+    methods: ["POST"]
+    pattern: '/api/v1/rooms/:code/rtc/consume/resume'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['resumeConsumer']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/rtcs_controller').default['resumeConsumer']>>>
     }
   }
 }

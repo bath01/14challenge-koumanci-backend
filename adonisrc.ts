@@ -53,6 +53,9 @@ export default defineConfig({
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/auth/auth_provider'),
     () => import('#providers/api_provider'),
+    () => import('#providers/mediasoup_provider'),
+    () => import('@adonisjs/transmit/transmit_provider'),
+
   ],
 
   /*
@@ -67,6 +70,10 @@ export default defineConfig({
     () => import('#start/routes'),
     () => import('#start/kernel'),
     () => import('#start/validator'),
+    {
+      file: () => import('#start/transmit'),
+      environment: ['web'],  // ← chargé uniquement en contexte HTTP
+    },
   ],
 
   /*
